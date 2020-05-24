@@ -6,11 +6,7 @@ require('dotenv').config();
 const app = express();
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.post('/', (req, res) => {
-	res.send('heooloowrld');
-	console.log(req.body.name)
-	console.log(`${req.body.name} ${req.body.place}`)
-});
+require('./routes/editor')(app, {});
 
 
 
