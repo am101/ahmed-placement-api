@@ -5,11 +5,19 @@ require('dotenv').config();
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: true}));
+const connectionString = process.env.DB_URL
 
-require('./routes/editor')(app, {});
+mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true}, (err, database) => {
+	if(err) return console.log(err);
+	require('./routes/editor')(app, database);
+	require('./routes/general')(app, database);
+	require('./routes/user')(app, database);
+	
+	
 
-
-
-app.listen(process.env.PORT || 3000, () => {
-	console.log(`server started on port ${process.env.PORT}`);
+	app.listen(process.env.PORT || 3000, () => {
+		console.log(`server started on port ${process.env.PORT}`);
+	});
 });
+
+
