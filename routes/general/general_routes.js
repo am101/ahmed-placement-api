@@ -1,27 +1,23 @@
+let Chat = require('../../models/chat.model');
 module.exports = function(app, db) {
-    app.post('/general/chatroom', (req, res) => {
-        const test = {
-            text: req.body.text
-        };
-        db.collection('test').insertOne(test, (err, result) => {
-            if(err) return console.log(err);
-            console.log(result.ops[0]);
-            res.send('result added');
-        });
+    app.get('/general/chatroom', (req, res) => {
+        Chat.find()
+            .then(chat => res.json(chat))
+            .catch(err => res.status(400).json('Error: ' + err));
     });
 
-    app.get('/general/chatroom', (req, res) => {
-        db.collection('test').find({}, (err, data) => {
-            if(err) return console.log(err);
-            console.log(data);
-
-        });
+    app.post('/general/chatroom', (req, res) => {
+        const username = req.body.username;
+        const message = req.body.message;
+        const newMessage = new Chat({username, message});
+        newMessage.save()
+            .then(() => res.json('message added!'))
+            .catch(err => res.status(400).json('Error: ' + err));
     });
     
     app.delete('/general/chatroom', (req, res) => {
-        db.collection('test').deleteOne({text:'apple'}, (err, result) => {
-            if(err) return console/log(err);
-            res.send('deleted the object');
-        });
+        Chat.findByIdAndDelete(req.params.id)
+            .then(() => res.json('message deleted.'))
+            .catch(err => res.status(400).json('Error: ' + err));
     });
 }
